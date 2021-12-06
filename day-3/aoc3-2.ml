@@ -12,7 +12,7 @@ let to_bit_list s =
 let rec read_lines () =
   match input_line stdin with
   | line -> line :: read_lines ()
-  | exception End_of_file -> [] in 
+  | exception End_of_file -> [] in
 
 let bit_strings = read_lines () in
 let bit_lists = List.map to_bit_list bit_strings in
@@ -25,13 +25,19 @@ let update_count (zeros, ones) l =
     (zeros, ones + 1) in
 let first_bit_count l = List.fold_left update_count (0, 0) l in 
 
+let starts_with bit bit_list =
+  match bit_list with
+  | [] -> false
+  | h :: _ -> h = bit in 
+
 let rec process get_deciding_bit bit_lists =
   match bit_lists with
-  | [] | [] :: _ -> [] 
+  | [] -> []
   | h :: [] -> h
   | l ->
       let deciding_bit = get_deciding_bit l in 
-      deciding_bit :: process get_deciding_bit (List.map List.tl l) in
+      let filtered = List.filter (starts_with deciding_bit) l in
+      deciding_bit :: process get_deciding_bit (List.map List.tl filtered) in
 
 let get_most_common_first_bit l = 
   let (zeros, ones) = first_bit_count l in
@@ -43,14 +49,13 @@ let get_least_common_first_bit l =
 let f acc bit = 2 * acc + bit in
 let bit_list_to_int l = List.fold_left f 0 l in
 
-let gamma = bit_lists
-            |> process get_most_common_first_bit
-            |> bit_list_to_int in
+let oxygen = bit_lists
+             |> process get_most_common_first_bit
+             |> bit_list_to_int in
 
-let epsilon = bit_lists
-              |> process get_least_common_first_bit
-              |> bit_list_to_int in
+let co2 = bit_lists
+          |> process get_least_common_first_bit
+          |> bit_list_to_int in
 
-gamma * epsilon
+oxygen * co2
 |> print_int
-                
